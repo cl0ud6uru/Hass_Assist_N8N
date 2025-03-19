@@ -2,9 +2,10 @@
 ---
 
 ## **📖 N8N Integration with Home Assistant Assist (This is a rough draft and is not yet working pproerly, but should help get you there)**
-This guide explains how to **integrate N8N with Home Assistant Assist** using the **Ollama integration trick** to route AI queries through N8N.
+This guide explains how to **integrate N8N with Home Assistant Assist** using the **Ollama integration** to use a N8N as the Conversation agent.
 
-https://i.imgur.com/u7Swq8V.png 
+![image](https://github.com/user-attachments/assets/ee93e6c7-2750-47c0-ae9b-41a2372ee539)
+
 
 ---
 
