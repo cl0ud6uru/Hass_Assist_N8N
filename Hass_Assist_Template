@@ -1,0 +1,295 @@
+{
+  "name": "Hass_Assist _Template",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "268ca50e-3e80-4539-96e3-8e7852f23124",
+        "options": {
+          "responseData": "{ “version”: “0.5.13” }"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2580,
+        -2240
+      ],
+      "id": "d2faa1f1-561e-4e81-aec2-44d021a75baa",
+      "name": "GET version",
+      "webhookId": "268ca50e-3e80-4539-96e3-8e7852f23124"
+    },
+    {
+      "parameters": {
+        "path": "b186b8f6-e068-4593-aed2-67641f2dfde0",
+        "options": {
+          "responseData": "{     \"models\": [         {             \"name\": \"llama3.2:latest\",             \"model\": \"llama3.2:latest\",             \"modified_at\": \"2025-03-05T20:11:32.225032-08:00\",             \"size\": 2019393189,             \"digest\": \"a80c4f17acd55265feec403c7aef86be0c25983ab279d83f3bcd3abbcb5b8b72\",             \"details\": {                 \"parent_model\": \"\",                 \"format\": \"gguf\",                 \"family\": \"llama\",                 \"families\": [                     \"llama\"                 ],                 \"parameter_size\": \"3.2B\",                 \"quantization_level\": \"Q4_K_M\"             }         },         {             \"name\": \"deepseek-r1:latest\",             \"model\": \"deepseek-r1:latest\",             \"modified_at\": \"2025-03-03T17:26:50.7367646-08:00\",             \"size\": 4683075271,             \"digest\": \"0a8c266910232fd3291e71e5ba1e058cc5af9d411192cf88b6d30e92b6e73163\",             \"details\": {                 \"parent_model\": \"\",                 \"format\": \"gguf\",                 \"family\": \"qwen2\",                 \"families\": [                     \"qwen2\"                 ],                 \"parameter_size\": \"7.6B\",                 \"quantization_level\": \"Q4_K_M\"             }         },         {             \"name\": \"deepseek-r1:1.5b\",             \"model\": \"deepseek-r1:1.5b\",             \"modified_at\": \"2025-03-02T18:54:23.6412071-08:00\",             \"size\": 1117322599,             \"digest\": \"a42b25d8c10a841bd24724309898ae851466696a7d7f3a0a408b895538ccbc96\",             \"details\": {                 \"parent_model\": \"\",                 \"format\": \"gguf\",                 \"family\": \"qwen2\",                 \"families\": [                     \"qwen2\"                 ],                 \"parameter_size\": \"1.8B\",                 \"quantization_level\": \"Q4_K_M\"             }         },         {             \"name\": \"deepseek-r1:14b\",             \"model\": \"deepseek-r1:14b\",             \"modified_at\": \"2025-03-02T16:09:37.6128441-08:00\",             \"size\": 8988112040,             \"digest\": \"ea35dfe18182f635ee2b214ea30b7520fe1ada68da018f8b395b444b662d4f1a\",             \"details\": {                 \"parent_model\": \"\",                 \"format\": \"gguf\",                 \"family\": \"qwen2\",                 \"families\": [                     \"qwen2\"                 ],                 \"parameter_size\": \"14.8B\",                 \"quantization_level\": \"Q4_K_M\"             }         }     ] }"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2580,
+        -1980
+      ],
+      "id": "18725d1c-3f4c-4a8a-a164-63a710d7ff32",
+      "name": "List Models",
+      "webhookId": "b186b8f6-e068-4593-aed2-67641f2dfde0"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1a7d1d3c-534d-48ed-87da-9e299495b71d",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2580,
+        -1620
+      ],
+      "id": "5c6752da-60a3-480f-81ba-7dc17cf80026",
+      "name": "Chat",
+      "webhookId": "1a7d1d3c-534d-48ed-87da-9e299495b71d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.messages[$json.body.messages.length - 1].content }}",
+        "options": {
+          "systemMessage": "You're a helpful assistant that helps the user control home assistant.\nHere is a list of entites\n\nLivingroom light \nlight.lv_1\n\nKitchen light \nlight.kitchen_light_switch\n\nBedroom Lights\nlight.bedroom_lights\n\nToday is {{ $now.format('cccc') }} the {{ $now.format('yyyy-MM-dd HH:mm') }}.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        -2268,
+        -1620
+      ],
+      "id": "5e2d6ebc-a1bd-490b-8c49-16be73506e2d",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2360,
+        -1400
+      ],
+      "id": "11be9b67-922b-4c73-bdb3-ffee8034d112",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "aiIOkaP2V2is9L2S",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"model\": \"llama3.2:latest\",\n  \"created_at\": \"{{ $now }}\",\n  \"message\": {\n    \"role\": \"assistant\",\n    \"content\": \"{{ $('AI Agent').item.json.output }}\"\n  },\n  \"done\": true\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1800,
+        -1620
+      ],
+      "id": "39a8d5a4-b72c-4d91-9a17-96bbbabe6ccd",
+      "name": "Respond to Webhook",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Send an announcement to home assistant. ",
+        "resource": "service",
+        "operation": "call",
+        "domain": "assist_satellite",
+        "service": "announce",
+        "serviceAttributes": {
+          "attributes": [
+            {
+              "name": "entity_id",
+              "value": "assist_satellite.assist_microphone"
+            },
+            {
+              "name": "message",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Value', `\"This value is the announcement you wish to make.\"`, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.homeAssistantTool",
+      "typeVersion": 1,
+      "position": [
+        -2240,
+        -1400
+      ],
+      "id": "c10cfd30-2e30-4563-891f-22a50d967117",
+      "name": "Home Assistant Announce",
+      "credentials": {
+        "homeAssistantApi": {
+          "id": "Qr3XLQNzq890gVRY",
+          "name": "Home Assistant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Turns on one or more lgiths an dadjusts their properties, even when they are turned on already. ",
+        "resource": "service",
+        "operation": "call",
+        "domain": "light",
+        "service": "turn_on",
+        "serviceAttributes": {
+          "attributes": [
+            {
+              "name": "entity_id",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Value', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.homeAssistantTool",
+      "typeVersion": 1,
+      "position": [
+        -2120,
+        -1400
+      ],
+      "id": "15dbbf08-48f9-4e67-87d6-065b56ba9177",
+      "name": "Home Assistant Light Turn on",
+      "credentials": {
+        "homeAssistantApi": {
+          "id": "Qr3XLQNzq890gVRY",
+          "name": "Home Assistant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Turns off one or more lights. ",
+        "resource": "service",
+        "operation": "call",
+        "domain": "light",
+        "service": "turn_off",
+        "serviceAttributes": {
+          "attributes": [
+            {
+              "name": "entity_id",
+              "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Value', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.homeAssistantTool",
+      "typeVersion": 1,
+      "position": [
+        -2000,
+        -1400
+      ],
+      "id": "653c1955-a494-4137-8048-338227cb3aae",
+      "name": "Home Assistant Light Turn Off",
+      "credentials": {
+        "homeAssistantApi": {
+          "id": "Qr3XLQNzq890gVRY",
+          "name": "Home Assistant account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Home Assistant Announce": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Home Assistant Light Turn on": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Home Assistant Light Turn Off": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6e6fbe9e-133a-4a17-8370-6641dff6c0b3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ce7dae34dce88f6cef289afdea88376269d9665e7c5268edc36ccc8ef9a21355"
+  },
+  "id": "EwFkteCd8kBfpzbl",
+  "tags": []
+}
