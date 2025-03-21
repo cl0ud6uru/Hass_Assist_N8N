@@ -3,7 +3,8 @@
 This guide explains how to **integrate N8N with Home Assistant Assist** using the **Ollama integration** to use N8N as the Conversation agent.
 (This readme was written by ChatGPT for now because Im lazy)
 
-![image](https://github.com/user-attachments/assets/ee93e6c7-2750-47c0-ae9b-41a2372ee539)
+![image](https://github.com/user-attachments/assets/bb25c8f3-2baf-4c8d-bee8-002ad3550ad3)
+
 
 ---
 
