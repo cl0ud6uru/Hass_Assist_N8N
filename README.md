@@ -1,11 +1,9 @@
 
----
-
-## **📖 N8N Integration with Home Assistant Assist (This is a rough draft and is not yet working pproerly, but should help get you there)**
-This guide explains how to **integrate N8N with Home Assistant Assist** using the **Ollama integration** to use a N8N as the Conversation agent.
+## **📖 N8N Integration with Home Assistant Assist**
+This guide explains how to **integrate N8N with Home Assistant Assist** using the **Ollama integration** to use N8N as the Conversation agent.
+(This readme was written by ChatGPT for now because Im lazy)
 
 ![image](https://github.com/user-attachments/assets/ee93e6c7-2750-47c0-ae9b-41a2372ee539)
-
 
 ---
 
@@ -74,8 +72,8 @@ These **first two webhooks** trick Home Assistant’s **Ollama integration** int
 ```json
 { "version": "0.5.13" }
 ```
-![image](https://github.com/user-attachments/assets/e56f15d0-29e0-40d7-9a07-81bb2b642a04)
 
+![image](https://github.com/user-attachments/assets/e56f15d0-29e0-40d7-9a07-81bb2b642a04)
 
 #### **🌐 Webhook 2: "List Models"**
 | Setting        | Value |
@@ -95,8 +93,8 @@ These **first two webhooks** trick Home Assistant’s **Ollama integration** int
   ]
 }
 ```
-![image](https://github.com/user-attachments/assets/e734ed8d-d91b-4a91-9d99-30bd0310b78e)
 
+![image](https://github.com/user-attachments/assets/e734ed8d-d91b-4a91-9d99-30bd0310b78e)
 
 ✅ **These allow you to add N8N to Home Assistant as if it were an Ollama server.**
 
@@ -117,30 +115,9 @@ These webhooks **handle actual AI queries from Assist**.
 
 ![image](https://github.com/user-attachments/assets/b0081dd9-7042-45fb-b4d9-6658f8e5cba2)
 
-
-#### **📝 Webhook 4: "Respond to Webhook" (Sends AI Response)**
-| Setting        | Value |
-|---------------|----------------|
-| **Node Type** | `Respond to Webhook` |
-| **Name**      | `Respond to Webhook` |
-| **Respond With** | `JSON` |
-| **Response Body** |
-```json
-{
-  "model": "llama3.2:latest",
-  "created_at": "{{ $now.toISOString() }}",
-  "message": {
-    "role": "assistant",
-    "content": "{{ $('AI Agent').item.json.output }}"
-  },
-  "done": true
-}
-```
-
-
 ---
-![image](https://github.com/user-attachments/assets/5a8328f3-5b09-4f36-9351-bd9c5023d74f)
-### **📌 Step 3: Configure the AI Agent Node**
+
+#### **🤖 AI Agent Node**
 | Setting | Value |
 |---------------|----------------|
 | **Node Type** | `AI Agent` |
@@ -151,7 +128,48 @@ These webhooks **handle actual AI queries from Assist**.
 
 ✅ **Ensures the AI always processes the latest user input.**
 
-![image](https://github.com/user-attachments/assets/b5ef6e01-9d80-41c0-a046-4570fb43fcd7)
+![image](https://github.com/user-attachments/assets/776dfa29-8b12-4135-b8bb-d7d52288b674)
+
+
+
+---
+
+#### **🧪 Set Node: “Edit Fields” (Fixes JSON for Webhook)**
+This node ensures that special characters like newlines and quotes are escaped properly before sending to Home Assistant.
+
+| Setting | Value |
+|--------|-------|
+| **Node Type** | Set |
+| **Name** | `Edit Fields` |
+| **Field Name** | `output` |
+| **Value (Expression)** |
+```javascript
+{{ $json.output.replace(/\\n/g, "\\\\n").replace(/"/g, '\\"') }}
+```
+![image](https://github.com/user-attachments/assets/81d22cd5-2381-46d8-9659-8bd3468e79a2)
+
+✅ **This prevents JSON parsing issues in the Webhook response.**
+
+---
+
+#### **🔁 Respond to Webhook Node**
+| Setting | Value |
+|---------------|----------------|
+| **Node Type** | `Respond to Webhook` |
+| **Respond With** | JSON |
+| **Response Body** |
+```json
+{
+  "model": "llama3.2:latest",
+  "created_at": "{{ $now }}",
+  "message": {
+    "role": "assistant",
+    "content": "{{ $json.output }}"
+  },
+  "done": true
+}
+```
+![image](https://github.com/user-attachments/assets/f7a7b6af-e42e-4886-8586-67dd7cb2eeff)
 
 ---
 
@@ -181,6 +199,7 @@ Once N8N is properly set up, you need to **connect it to Home Assistant**.
 3. Check N8N logs:
    - The **Chat webhook** should receive the request.
    - The **AI Agent node** should process the response.
+   - The **Set node** ensures formatting is clean.
    - The **Webhook Response node** should send back a valid JSON reply.
 
 4. If responses are not appearing:
@@ -197,7 +216,7 @@ Once N8N is properly set up, you need to **connect it to Home Assistant**.
 ## **📌 Summary**
 ✅ **Tricked Home Assistant’s Ollama Integration** into accepting N8N as a model.  
 ✅ **Intercepted Assist requests** and forwarded them to an external AI.  
-✅ **Processed the AI response and sent it back in Ollama-compatible JSON format**.  
+✅ **Formatted the response correctly using a Set Node**.  
 ✅ **Successfully integrated Home Assistant Assist with N8N for custom AI workflows!**  
 
 ---
